@@ -1,0 +1,1667 @@
+/* ===== CSS Variables & Reset ===== */
+:root {
+    --bg-sky: #f7f7f7;
+    --bg-ground: #535353;
+    --ground-line: #747474;
+    --pixel-black: #535353;
+    --pixel-gray: #747474;
+    --pixel-light: #c4c4c4;
+    --cat-orange: #ff9f43;
+    --cat-dark: #ee7730;
+    --cat-light: #ffd8a8;
+    --yarn-pink: #ff6b9d;
+    --yarn-dark: #e84a7f;
+    --yarn-light: #ffb3cc;
+    --accent-green: #2ecc71;
+    --text-dark: #535353;
+
+    --font-pixel: 'Press Start 2P', cursive;
+    --font-cartoon: 'Fredoka', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-pixel);
+    background: var(--bg-sky);
+    min-height: 100vh;
+    overflow: hidden;
+    cursor: none;
+    image-rendering: pixelated;
+}
+
+/* ===== Game Container ===== */
+.game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ===== Sky & Ground (Chrome Dino Style) ===== */
+.sky {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70%;
+    background: var(--bg-sky);
+}
+
+.ground {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    background: var(--bg-sky);
+    border-top: 4px solid var(--pixel-black);
+}
+
+.ground::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: repeating-linear-gradient(90deg,
+            var(--pixel-gray) 0px,
+            var(--pixel-gray) 20px,
+            transparent 20px,
+            transparent 40px);
+    animation: groundScroll 3s linear infinite;
+}
+
+.ground::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: repeating-linear-gradient(90deg,
+            transparent 0px,
+            transparent 30px,
+            var(--pixel-light) 30px,
+            var(--pixel-light) 40px);
+    animation: groundScroll 5s linear infinite;
+}
+
+@keyframes groundScroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-100px);
+    }
+}
+
+/* ===== Header ===== */
+.game-header {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 100;
+}
+
+.game-header h1 {
+    font-size: 24px;
+    color: var(--text-dark);
+    text-shadow:
+        4px 4px 0 var(--bg-sky),
+        -1px -1px 0 var(--pixel-light);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.game-title {
+    font-family: var(--font-cartoon);
+    font-size: 52px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--yarn-pink) 0%, var(--cat-orange) 50%, var(--yarn-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(3px 3px 0 var(--pixel-black)) drop-shadow(-1px -1px 0 white);
+    letter-spacing: 4px;
+    animation: titleBounce 2s ease-in-out infinite;
+}
+
+@keyframes titleBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.subtitle {
+    font-family: var(--font-cartoon);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--pixel-gray);
+    letter-spacing: 1px;
+}
+
+/* ===== Game Area ===== */
+.game-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
+/* ===== Pixel Cat ===== */
+.cat {
+    position: absolute;
+    width: 120px;
+    height: 90px;
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease-out;
+    z-index: 20;
+}
+
+.cat-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cat-head {
+    position: absolute;
+    width: 40px;
+    height: 36px;
+    background: var(--cat-orange);
+    border: 4px solid var(--pixel-black);
+    top: 0;
+    left: 20px;
+    image-rendering: pixelated;
+}
+
+.cat-ear {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 14px solid var(--cat-orange);
+    top: -14px;
+}
+
+.cat-ear::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 8px solid var(--yarn-pink);
+    top: 6px;
+    left: -4px;
+}
+
+.cat-ear-left {
+    left: 2px;
+}
+
+.cat-ear-right {
+    right: 2px;
+}
+
+.cat-face {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cat-eye {
+    position: absolute;
+    width: 10px;
+    height: 12px;
+    background: white;
+    border: 2px solid var(--pixel-black);
+    top: 8px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.cat-eye-left {
+    left: 4px;
+}
+
+.cat-eye-right {
+    right: 4px;
+}
+
+.cat-pupil {
+    position: absolute;
+    width: 6px;
+    height: 8px;
+    background: var(--pixel-black);
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: all 0.1s ease;
+}
+
+.cat-nose {
+    position: absolute;
+    width: 6px;
+    height: 4px;
+    background: var(--yarn-pink);
+    border: 2px solid var(--pixel-black);
+    left: 50%;
+    transform: translateX(-50%);
+    top: 18px;
+}
+
+.cat-nose::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 4px solid var(--yarn-pink);
+    top: 2px;
+    left: -3px;
+}
+
+.cat-mouth {
+    position: absolute;
+    width: 12px;
+    height: 6px;
+    border-bottom: 2px solid var(--pixel-black);
+    border-radius: 0 0 50% 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 22px;
+}
+
+.cat-whiskers {
+    position: absolute;
+    top: 18px;
+}
+
+.cat-whiskers::before,
+.cat-whiskers::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 2px;
+    background: var(--pixel-black);
+}
+
+.cat-whiskers::before {
+    transform: rotate(-10deg);
+    top: -4px;
+}
+
+.cat-whiskers::after {
+    transform: rotate(10deg);
+    top: 4px;
+}
+
+.cat-whiskers-left {
+    left: -18px;
+}
+
+.cat-whiskers-right {
+    right: -18px;
+    transform: scaleX(-1);
+}
+
+.cat-torso {
+    position: absolute;
+    width: 50px;
+    height: 30px;
+    background: var(--cat-orange);
+    border: 4px solid var(--pixel-black);
+    top: 28px;
+    left: 15px;
+    border-radius: 8px;
+}
+
+.cat-leg {
+    position: absolute;
+    width: 12px;
+    height: 20px;
+    background: var(--cat-orange);
+    border: 3px solid var(--pixel-black);
+    bottom: 0;
+    border-radius: 0 0 4px 4px;
+}
+
+.cat-leg-front-left {
+    left: 18px;
+    animation: legWalk 0.3s ease-in-out infinite alternate;
+}
+
+.cat-leg-front-right {
+    left: 32px;
+    animation: legWalk 0.3s ease-in-out infinite alternate-reverse;
+}
+
+.cat-leg-back-left {
+    right: 18px;
+    animation: legWalk 0.3s ease-in-out infinite alternate-reverse;
+}
+
+.cat-leg-back-right {
+    right: 4px;
+    animation: legWalk 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes legWalk {
+    from {
+        height: 20px;
+    }
+
+    to {
+        height: 16px;
+    }
+}
+
+.cat.idle .cat-leg {
+    animation: none;
+    height: 20px;
+}
+
+.cat-tail {
+    position: absolute;
+    width: 8px;
+    height: 30px;
+    background: var(--cat-orange);
+    border: 3px solid var(--pixel-black);
+    right: -5px;
+    top: 20px;
+    border-radius: 4px;
+    transform-origin: top center;
+    animation: tailWag 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes tailWag {
+    from {
+        transform: rotate(-20deg);
+    }
+
+    to {
+        transform: rotate(20deg);
+    }
+}
+
+.cat.excited .cat-tail {
+    animation-duration: 0.2s;
+}
+
+.cat.idle .cat-tail {
+    animation-duration: 1s;
+}
+
+/* ===== Yarn Ball ===== */
+.yarn-ball {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background:
+        radial-gradient(circle at 30% 30%, var(--yarn-light) 0%, var(--yarn-pink) 50%, var(--yarn-dark) 100%);
+    border: 4px solid var(--pixel-black);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 25;
+    cursor: none;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.yarn-pattern {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background:
+        repeating-linear-gradient(45deg,
+            transparent 0px,
+            transparent 4px,
+            rgba(255, 255, 255, 0.3) 4px,
+            rgba(255, 255, 255, 0.3) 6px);
+    animation: yarnRotate 2s linear infinite;
+}
+
+@keyframes yarnRotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.yarn-shine {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    top: 6px;
+    left: 8px;
+    opacity: 0.8;
+}
+
+/* ===== Yarn Trail ===== */
+.yarn-trail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.yarn-string {
+    stroke-dasharray: 8 4;
+    animation: dashMove 0.5s linear infinite;
+}
+
+@keyframes dashMove {
+    from {
+        stroke-dashoffset: 0;
+    }
+
+    to {
+        stroke-dashoffset: -12;
+    }
+}
+
+/* ===== Particles ===== */
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 30;
+}
+
+.particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--yarn-pink);
+    border: 2px solid var(--pixel-black);
+    animation: particleFade 0.8s ease-out forwards;
+}
+
+@keyframes particleFade {
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.5) translateY(-20px);
+    }
+}
+
+/* ===== Paw Prints ===== */
+.paw-prints {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.paw-print {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    opacity: 0.3;
+    animation: pawFade 2s ease-out forwards;
+}
+
+.paw-print::before {
+    content: '🐾';
+    font-size: 16px;
+}
+
+@keyframes pawFade {
+    0% {
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ===== Game Info Panel ===== */
+.game-info {
+    position: absolute;
+    top: 100px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+}
+
+.score-panel {
+    background: white;
+    border: 4px solid var(--pixel-black);
+    padding: 10px 15px;
+    text-align: center;
+    box-shadow: 4px 4px 0 var(--pixel-black);
+}
+
+.score-panel .label {
+    display: block;
+    font-size: 8px;
+    color: var(--pixel-gray);
+    margin-bottom: 5px;
+}
+
+.score-panel .value {
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+.score-panel .unit {
+    font-size: 8px;
+    color: var(--pixel-gray);
+}
+
+.cat-mood {
+    font-size: 12px !important;
+}
+
+/* ===== Decorations (Chrome Dino Style) ===== */
+.decorations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.cloud {
+    position: absolute;
+    background: var(--pixel-light);
+    border: 3px solid var(--pixel-gray);
+}
+
+.cloud::before,
+.cloud::after {
+    content: '';
+    position: absolute;
+    background: var(--pixel-light);
+    border: 3px solid var(--pixel-gray);
+}
+
+.cloud-1 {
+    width: 60px;
+    height: 20px;
+    top: 15%;
+    left: 10%;
+    animation: cloudFloat 20s linear infinite;
+}
+
+.cloud-1::before {
+    width: 30px;
+    height: 16px;
+    top: -12px;
+    left: 10px;
+}
+
+.cloud-2 {
+    width: 80px;
+    height: 24px;
+    top: 25%;
+    left: 60%;
+    animation: cloudFloat 25s linear infinite;
+}
+
+.cloud-2::before {
+    width: 40px;
+    height: 20px;
+    top: -14px;
+    left: 20px;
+}
+
+.cloud-3 {
+    width: 50px;
+    height: 18px;
+    top: 10%;
+    left: 80%;
+    animation: cloudFloat 18s linear infinite;
+}
+
+.cloud-3::before {
+    width: 25px;
+    height: 14px;
+    top: -10px;
+    left: 12px;
+}
+
+@keyframes cloudFloat {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-100vw);
+    }
+}
+
+.cactus {
+    position: absolute;
+    bottom: 32%;
+    width: 20px;
+    height: 50px;
+    background: var(--pixel-gray);
+    border: 3px solid var(--pixel-black);
+}
+
+.cactus::before,
+.cactus::after {
+    content: '';
+    position: absolute;
+    background: var(--pixel-gray);
+    border: 3px solid var(--pixel-black);
+}
+
+.cactus::before {
+    width: 12px;
+    height: 25px;
+    left: -15px;
+    top: 10px;
+    border-radius: 6px 6px 0 0;
+}
+
+.cactus::after {
+    width: 12px;
+    height: 20px;
+    right: -15px;
+    top: 15px;
+    border-radius: 6px 6px 0 0;
+}
+
+.cactus-1 {
+    left: 10%;
+    animation: cactusMove 15s linear infinite;
+}
+
+.cactus-2 {
+    left: 70%;
+    height: 40px;
+    animation: cactusMove 20s linear infinite;
+}
+
+@keyframes cactusMove {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-100vw);
+    }
+}
+
+/* ===== Footer ===== */
+.game-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 100;
+}
+
+.game-footer p {
+    font-size: 10px;
+    color: var(--pixel-gray);
+    letter-spacing: 1px;
+}
+
+/* ===== Custom Cursor ===== */
+.game-area::after {
+    content: '';
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 107, 157, 0.5);
+    border: 2px solid var(--pixel-black);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1000;
+    transition: transform 0.1s ease;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .game-header h1 {
+        font-size: 16px;
+    }
+
+    .subtitle {
+        font-size: 8px;
+    }
+
+    .game-info {
+        top: 80px;
+        right: 10px;
+    }
+
+    .score-panel {
+        padding: 8px 10px;
+    }
+
+    .score-panel .value {
+        font-size: 12px;
+    }
+
+    .cat {
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+
+    .yarn-ball {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+/* ===== Cat States ===== */
+.cat.running .cat-body {
+    animation: catBounce 0.15s ease-in-out infinite alternate;
+}
+
+@keyframes catBounce {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-4px);
+    }
+}
+
+.cat.excited .cat-eye .cat-pupil {
+    transform: scale(1.3);
+}
+
+.cat.idle .cat-body {
+    animation: catBreath 2s ease-in-out infinite;
+}
+
+@keyframes catBreath {
+
+    0%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    50% {
+        transform: scaleY(1.02);
+    }
+}
+
+/* ===== Pounce State ===== */
+.cat.pouncing {
+    animation: catPounce 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.cat.pouncing .cat-body {
+    animation: pounceSquish 0.6s ease-out;
+}
+
+.cat.pouncing .cat-eye .cat-pupil {
+    transform: scale(1.5);
+}
+
+.cat.pouncing .cat-tail {
+    animation: tailExcited 0.08s ease-in-out infinite alternate;
+}
+
+.cat.pouncing .cat-leg {
+    animation: legPounce 0.3s ease-out;
+}
+
+/* Pounce animation - squish and stretch effects (JS handles position) */
+@keyframes catPounce {
+    0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+
+    /* Crouch down to prepare */
+    15% {
+        transform: translate(-50%, -50%) scale(1.2, 0.7) rotate(0deg);
+    }
+
+    /* Launch stretch */
+    30% {
+        transform: translate(-50%, -50%) scale(0.85, 1.25) rotate(-8deg);
+    }
+
+    /* Mid-air */
+    50% {
+        transform: translate(-50%, -50%) scale(0.9, 1.15) rotate(-5deg);
+    }
+
+    /* Descending */
+    70% {
+        transform: translate(-50%, -50%) scale(0.95, 1.1) rotate(3deg);
+    }
+
+    /* Landing squish */
+    85% {
+        transform: translate(-50%, -50%) scale(1.2, 0.75) rotate(5deg);
+    }
+
+    /* Settle back */
+    100% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+}
+
+@keyframes pounceSquish {
+    0% {
+        transform: scale(1, 1);
+    }
+
+    /* Crouch compression */
+    15% {
+        transform: scale(1.25, 0.7);
+    }
+
+    /* Launch stretch */
+    30% {
+        transform: scale(0.8, 1.3);
+    }
+
+    /* Mid-air */
+    50% {
+        transform: scale(0.9, 1.15);
+    }
+
+    /* Descending stretch */
+    70% {
+        transform: scale(0.95, 1.1);
+    }
+
+    /* Landing squish */
+    85% {
+        transform: scale(1.2, 0.75);
+    }
+
+    /* Return to normal */
+    100% {
+        transform: scale(1, 1);
+    }
+}
+
+@keyframes tailExcited {
+    from {
+        transform: rotate(-50deg);
+    }
+
+    to {
+        transform: rotate(50deg);
+    }
+}
+
+@keyframes legPounce {
+    0% {
+        height: 20px;
+    }
+
+    /* Crouch */
+    15% {
+        height: 10px;
+    }
+
+    /* Extended in air */
+    40% {
+        height: 25px;
+    }
+
+    /* Mid-air tuck */
+    60% {
+        height: 8px;
+    }
+
+    /* Landing extend */
+    85% {
+        height: 15px;
+    }
+
+    100% {
+        height: 20px;
+    }
+}
+
+/* Pounce preparing (crouch) */
+.cat.preparing-pounce {
+    animation: preparePounce 0.2s ease-out forwards;
+}
+
+.cat.preparing-pounce .cat-body {
+    animation: crouchBody 0.2s ease-out forwards;
+}
+
+.cat.preparing-pounce .cat-tail {
+    animation: tailReady 0.2s ease-out forwards;
+}
+
+@keyframes preparePounce {
+    from {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    to {
+        transform: translate(-50%, -45%) scale(1.1, 0.85);
+    }
+}
+
+@keyframes crouchBody {
+    from {
+        transform: scaleY(1);
+    }
+
+    to {
+        transform: scaleY(0.85);
+    }
+}
+
+@keyframes tailReady {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(-30deg);
+    }
+}
+
+/* ===== Resting State (Tired Cat) ===== */
+.cat.resting {
+    animation: layDown 0.5s ease-out forwards;
+}
+
+.cat.resting .cat-body {
+    animation: restingBody 0.5s ease-out forwards;
+}
+
+.cat.resting .cat-head {
+    animation: headRest 0.5s ease-out forwards;
+}
+
+.cat.resting .cat-leg {
+    animation: none;
+    height: 10px !important;
+    opacity: 0.8;
+}
+
+.cat.resting .cat-torso {
+    animation: pantingTorso 0.8s ease-in-out infinite;
+}
+
+.cat.resting .cat-tail {
+    animation: tailRest 2s ease-in-out infinite;
+}
+
+.cat.resting .cat-eye {
+    animation: sleepyEyes 3s ease-in-out infinite;
+}
+
+.cat.resting .cat-mouth {
+    animation: panting 0.5s ease-in-out infinite;
+}
+
+@keyframes layDown {
+    from {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    to {
+        transform: translate(-50%, -35%) scale(1.1, 0.7);
+    }
+}
+
+@keyframes restingBody {
+    from {
+        transform: scaleY(1);
+    }
+
+    to {
+        transform: scaleY(0.75) scaleX(1.15);
+    }
+}
+
+@keyframes headRest {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(8px);
+    }
+}
+
+@keyframes pantingTorso {
+
+    0%,
+    100% {
+        transform: scaleX(1);
+    }
+
+    50% {
+        transform: scaleX(1.08);
+    }
+}
+
+@keyframes tailRest {
+
+    0%,
+    100% {
+        transform: rotate(-5deg);
+    }
+
+    50% {
+        transform: rotate(5deg);
+    }
+}
+
+@keyframes sleepyEyes {
+
+    0%,
+    40%,
+    100% {
+        height: 12px;
+        opacity: 1;
+    }
+
+    45%,
+    55% {
+        height: 4px;
+        opacity: 0.8;
+    }
+}
+
+@keyframes panting {
+
+    0%,
+    100% {
+        border-bottom-width: 2px;
+        height: 6px;
+    }
+
+    50% {
+        border-bottom-width: 3px;
+        height: 10px;
+    }
+}
+
+/* Panting indicator (tongue) */
+.cat.resting .cat-mouth::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 8px;
+    background: #ff8a9b;
+    border: 2px solid var(--pixel-black);
+    border-radius: 0 0 50% 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 4px;
+    animation: tongue 0.5s ease-in-out infinite;
+}
+
+@keyframes tongue {
+
+    0%,
+    100% {
+        height: 8px;
+    }
+
+    50% {
+        height: 12px;
+    }
+}
+
+/* Tired eyes */
+.cat.resting .cat-eye::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: var(--cat-orange);
+    border-bottom: 2px solid var(--pixel-black);
+    animation: droopyEyelid 0.8s ease-in-out infinite;
+}
+
+@keyframes droopyEyelid {
+
+    0%,
+    100% {
+        height: 40%;
+    }
+
+    50% {
+        height: 50%;
+    }
+}
+
+/* Z's for sleeping indicator */
+.cat.resting::after {
+    content: '💤';
+    position: absolute;
+    top: -20px;
+    right: -10px;
+    font-size: 20px;
+    animation: floatZ 1.5s ease-in-out infinite;
+}
+
+@keyframes floatZ {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.1);
+        opacity: 1;
+    }
+}
+
+/* ===== Camera Container ===== */
+.camera-container {
+    position: absolute;
+    bottom: 80px;
+    left: 20px;
+    width: 240px;
+    height: 180px;
+    background: var(--pixel-black);
+    border: 4px solid var(--pixel-black);
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 200;
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
+    display: none;
+}
+
+.camera-container.active {
+    display: block;
+    animation: cameraSlideIn 0.3s ease-out;
+}
+
+@keyframes cameraSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.camera-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+.camera-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: scaleX(-1);
+    pointer-events: none;
+}
+
+.camera-status {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 15px;
+    font-size: 8px;
+    text-align: center;
+    border-radius: 4px;
+    z-index: 10;
+}
+
+.camera-status.hidden {
+    display: none;
+}
+
+.camera-status.loading {
+    animation: statusPulse 1s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.camera-status.error {
+    background: rgba(231, 76, 60, 0.9);
+}
+
+.camera-status.success {
+    background: rgba(46, 204, 113, 0.9);
+}
+
+.hand-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 4px 8px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.hand-indicator.visible {
+    opacity: 1;
+}
+
+.hand-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--yarn-pink);
+    border-radius: 50%;
+    animation: handDotPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes handDotPulse {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    to {
+        transform: scale(1.3);
+        opacity: 0.7;
+    }
+}
+
+.hand-label {
+    font-size: 6px;
+    color: white;
+    letter-spacing: 0.5px;
+}
+
+/* ===== Control Panel ===== */
+.control-panel {
+    position: absolute;
+    top: 100px;
+    left: 20px;
+    background: white;
+    border: 4px solid var(--pixel-black);
+    padding: 12px;
+    z-index: 150;
+    box-shadow: 4px 4px 0 var(--pixel-black);
+    min-width: 140px;
+}
+
+.control-title {
+    font-size: 10px;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.control-btn {
+    flex: 1;
+    padding: 8px 4px;
+    font-family: var(--font-pixel);
+    font-size: 8px;
+    border: 3px solid var(--pixel-black);
+    background: var(--bg-sky);
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.control-btn:hover {
+    background: var(--pixel-light);
+    transform: translateY(-2px);
+}
+
+.control-btn.active {
+    background: var(--yarn-pink);
+    color: white;
+    box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
+}
+
+.control-btn:active {
+    transform: translateY(1px);
+}
+
+.control-hint {
+    font-size: 7px;
+    color: var(--pixel-gray);
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* ===== Finger Cursor (when in camera mode) ===== */
+.finger-cursor {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--yarn-pink);
+    border-radius: 50%;
+    background: rgba(255, 107, 157, 0.3);
+    pointer-events: none;
+    z-index: 1000;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+
+.finger-cursor.active {
+    display: block;
+    animation: fingerPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes fingerPulse {
+    from {
+        box-shadow: 0 0 0 0 rgba(255, 107, 157, 0.4);
+    }
+
+    to {
+        box-shadow: 0 0 0 10px rgba(255, 107, 157, 0);
+    }
+}
+
+/* ===== Hand Tracking Overlay ===== */
+.tracking-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.tracking-point {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: var(--yarn-pink);
+    border: 3px solid var(--pixel-black);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: trackingPointGlow 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes trackingPointGlow {
+    from {
+        box-shadow: 0 0 10px var(--yarn-pink);
+    }
+
+    to {
+        box-shadow: 0 0 20px var(--yarn-pink), 0 0 30px var(--yarn-light);
+    }
+}
+
+/* ===== Mode Indicator ===== */
+.mode-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    font-size: 6px;
+    border-radius: 4px;
+    z-index: 200;
+}
+
+.mode-badge.camera-mode {
+    background: linear-gradient(135deg, var(--yarn-pink), var(--yarn-dark));
+}
+
+/* ===== Responsive adjustments for camera UI ===== */
+@media (max-width: 768px) {
+    .control-panel {
+        top: auto;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 200px;
+    }
+
+    .camera-container {
+        width: 180px;
+        height: 135px;
+        bottom: auto;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .control-buttons {
+        justify-content: center;
+    }
+}
+
+/* ===== State Demo Panel ===== */
+.demo-panel {
+    position: absolute;
+    top: 220px;
+    left: 20px;
+    background: white;
+    border: 4px solid var(--pixel-black);
+    padding: 12px;
+    z-index: 150;
+    box-shadow: 4px 4px 0 var(--pixel-black);
+    min-width: 160px;
+}
+
+.demo-title {
+    font-family: var(--font-cartoon);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.demo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.demo-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+    font-family: var(--font-pixel);
+    border: 3px solid var(--pixel-black);
+    background: var(--bg-sky);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    min-height: 50px;
+}
+
+.demo-btn:hover {
+    background: var(--pixel-light);
+    transform: translateY(-2px);
+    box-shadow: 2px 2px 0 var(--pixel-black);
+}
+
+.demo-btn:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+.demo-btn.active {
+    background: var(--yarn-pink);
+    box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.demo-btn.active .demo-label {
+    color: white;
+}
+
+.demo-emoji {
+    font-size: 18px;
+    margin-bottom: 2px;
+}
+
+.demo-label {
+    font-size: 7px;
+    color: var(--text-dark);
+    text-align: center;
+}
+
+.demo-hint {
+    font-family: var(--font-cartoon);
+    font-size: 10px;
+    color: var(--pixel-gray);
+    text-align: center;
+}
+
+/* Demo mode indicator */
+.demo-mode-active .demo-panel {
+    border-color: var(--yarn-pink);
+    box-shadow: 4px 4px 0 var(--yarn-pink);
+}
+
+.demo-mode-active .demo-panel::before {
+    content: '演示中';
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background: var(--yarn-pink);
+    color: white;
+    font-family: var(--font-pixel);
+    font-size: 6px;
+    padding: 2px 6px;
+    border-radius: 2px;
+}
+
+/* Mobile responsive for demo panel */
+@media (max-width: 768px) {
+    .demo-panel {
+        top: auto;
+        bottom: 120px;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 240px;
+    }
+
+    .demo-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .demo-btn {
+        min-height: 40px;
+        padding: 6px 2px;
+    }
+
+    .demo-emoji {
+        font-size: 14px;
+    }
+
+    .demo-label {
+        font-size: 6px;
+    }
+}
+
+/* ===== Meow Floating Text ===== */
+.meow-text {
+    position: absolute;
+    font-family: var(--font-cartoon);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--yarn-pink);
+    text-shadow:
+        2px 2px 0 white,
+        -2px -2px 0 white,
+        2px -2px 0 white,
+        -2px 2px 0 white,
+        0 3px 6px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    z-index: 300;
+    animation: floatMeow 1.2s ease-out forwards;
+}
+
+@keyframes floatMeow {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(0.5);
+    }
+
+    20% {
+        transform: translateY(-10px) scale(1.2);
+    }
+
+    40% {
+        transform: translateY(-30px) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-80px) scale(0.8);
+    }
+}

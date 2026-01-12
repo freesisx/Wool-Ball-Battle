@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="一个像素风格的互动网页游戏，用手指或鼠标控制毛线球吸引可爱的猫咪追逐">
+    <title>🐱 毛线球大作战 - Yarn Ball Battle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="game-container">
+        <div class="sky"></div>
+        <div class="ground"></div>
+
+        <!-- Camera Preview -->
+        <div class="camera-container" id="cameraContainer">
+            <video class="camera-video" id="cameraVideo" playsinline></video>
+            <canvas class="camera-canvas" id="cameraCanvas"></canvas>
+            <div class="camera-status" id="cameraStatus">📷 摄像头未启动</div>
+            <div class="hand-indicator" id="handIndicator">
+                <span class="hand-dot"></span>
+                <span class="hand-label">食指位置</span>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel" id="controlPanel">
+            <div class="control-title">🎮 控制模式</div>
+            <div class="control-buttons">
+                <button class="control-btn active" id="mouseBtn" data-mode="mouse">
+                    🖱️ 鼠标
+                </button>
+                <button class="control-btn" id="cameraBtn" data-mode="camera">
+                    ✋ 手势
+                </button>
+            </div>
+            <div class="control-hint" id="controlHint">移动鼠标控制毛线球</div>
+        </div>
+
+        <!-- State Demo Panel -->
+        <div class="demo-panel" id="demoPanel">
+            <div class="demo-title">🎭 状态演示</div>
+            <div class="demo-grid">
+                <button class="demo-btn" data-state="idle">
+                    <span class="demo-emoji">😺</span>
+                    <span class="demo-label">悠闲</span>
+                </button>
+                <button class="demo-btn" data-state="curious">
+                    <span class="demo-emoji">😸</span>
+                    <span class="demo-label">好奇</span>
+                </button>
+                <button class="demo-btn" data-state="running">
+                    <span class="demo-emoji">😻</span>
+                    <span class="demo-label">追逐</span>
+                </button>
+                <button class="demo-btn" data-state="excited">
+                    <span class="demo-emoji">🙀</span>
+                    <span class="demo-label">兴奋</span>
+                </button>
+                <button class="demo-btn" data-state="pouncing">
+                    <span class="demo-emoji">🐱</span>
+                    <span class="demo-label">飞扑</span>
+                </button>
+                <button class="demo-btn" data-state="resting">
+                    <span class="demo-emoji">😴</span>
+                    <span class="demo-label">休息</span>
+                </button>
+            </div>
+            <div class="demo-hint">点击按钮预览猫咪动作</div>
+        </div>
+
+        <header class="game-header">
+            <h1 class="game-title">🧶 毛线球大作战 🐱</h1>
+            <p class="subtitle" id="subtitleText">移动鼠标或用手指控制毛线球！</p>
+        </header>
+
+        <div class="game-area" id="gameArea">
+            <!-- Cat will be rendered here -->
+            <div class="cat" id="cat">
+                <div class="cat-body">
+                    <div class="cat-head">
+                        <div class="cat-ear cat-ear-left"></div>
+                        <div class="cat-ear cat-ear-right"></div>
+                        <div class="cat-face">
+                            <div class="cat-eye cat-eye-left">
+                                <div class="cat-pupil"></div>
+                            </div>
+                            <div class="cat-eye cat-eye-right">
+                                <div class="cat-pupil"></div>
+                            </div>
+                            <div class="cat-nose"></div>
+                            <div class="cat-mouth"></div>
+                            <div class="cat-whiskers cat-whiskers-left"></div>
+                            <div class="cat-whiskers cat-whiskers-right"></div>
+                        </div>
+                    </div>
+                    <div class="cat-torso"></div>
+                    <div class="cat-leg cat-leg-front-left"></div>
+                    <div class="cat-leg cat-leg-front-right"></div>
+                    <div class="cat-leg cat-leg-back-left"></div>
+                    <div class="cat-leg cat-leg-back-right"></div>
+                    <div class="cat-tail"></div>
+                </div>
+            </div>
+
+            <!-- Yarn ball -->
+            <div class="yarn-ball" id="yarnBall">
+                <div class="yarn-pattern"></div>
+                <div class="yarn-shine"></div>
+            </div>
+
+            <!-- Yarn trail -->
+            <svg class="yarn-trail" id="yarnTrail">
+                <path class="yarn-string" id="yarnString" fill="none" stroke="#ff6b9d" stroke-width="3" />
+            </svg>
+
+            <!-- Particles container -->
+            <div class="particles" id="particles"></div>
+
+            <!-- Paw prints container -->
+            <div class="paw-prints" id="pawPrints"></div>
+        </div>
+
+        <div class="game-info">
+            <div class="score-panel">
+                <span class="label">扑中</span>
+                <span class="value" id="pounceCount">0</span>
+                <span class="unit">次</span>
+            </div>
+            <div class="score-panel">
+                <span class="label">猫咪状态</span>
+                <span class="value cat-mood" id="catMood">😺 好奇</span>
+            </div>
+        </div>
+
+        <div class="decorations">
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+            <div class="cloud cloud-3"></div>
+            <div class="cactus cactus-1"></div>
+            <div class="cactus cactus-2"></div>
+        </div>
+
+        <footer class="game-footer">
+            <p>按住鼠标快速移动让猫咪更兴奋！ 🎮</p>
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+
+</html>
