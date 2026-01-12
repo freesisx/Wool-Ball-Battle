@@ -3,6 +3,7 @@
 一个可爱的像素风格互动网页游戏，用鼠标或手势控制毛线球，吸引猫咪追逐！
 
 ![Game Preview](https://img.shields.io/badge/游戏-在线体验-ff6b9d?style=for-the-badge)
+在线体验 https://icy-snow-36a8.kingdomcheng.workers.dev/
 
 ## ✨ 游戏特色
 
