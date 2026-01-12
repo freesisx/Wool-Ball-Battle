@@ -4,6 +4,111 @@
  * With Camera Hand Tracking Support
  */
 
+/**
+ * Object Pool for efficient DOM element reuse
+ * Prevents memory leaks and reduces DOM operations
+ */
+class ObjectPool {
+    constructor(createElement, poolSize = 50) {
+        this.createElement = createElement;
+        this.pool = [];
+        this.activeCount = 0;
+
+        // Pre-create pool elements
+        for (let i = 0; i < poolSize; i++) {
+            const element = createElement();
+            element.style.display = 'none';
+            this.pool.push(element);
+        }
+    }
+
+    acquire() {
+        let element;
+        if (this.pool.length > 0) {
+            element = this.pool.pop();
+        } else {
+            // Create new if pool is exhausted
+            element = this.createElement();
+        }
+        element.style.display = '';
+        this.activeCount++;
+        return element;
+    }
+
+    release(element) {
+        element.style.display = 'none';
+        this.pool.push(element);
+        this.activeCount--;
+    }
+
+    // Get all elements (for initial attachment to DOM)
+    getAllElements() {
+        return [...this.pool];
+    }
+}
+
+/**
+ * Animal Spawner - Controls background animals with max 2 on screen
+ */
+class AnimalSpawner {
+    constructor(container) {
+        this.container = container;
+        this.maxActive = 2;
+        this.activeAnimals = [];
+
+        // Define available animals with their properties
+        this.animalTypes = [
+            { emoji: '🐢', className: 'turtle', duration: 45000 },
+            { emoji: '🐎', className: 'horse', duration: 8000 },
+            { emoji: '🐕', className: 'dog', duration: 20000 },
+            { emoji: '🐦', className: 'bird bird-1', duration: 12000 },
+            { emoji: '🕊️', className: 'bird bird-2', duration: 15000 },
+            { emoji: '🦅', className: 'bird bird-3', duration: 10000 }
+        ];
+
+        // Start spawning
+        this.scheduleNextSpawn();
+    }
+
+    scheduleNextSpawn() {
+        // Random delay between 2-8 seconds
+        const delay = 2000 + Math.random() * 6000;
+        setTimeout(() => this.trySpawnAnimal(), delay);
+    }
+
+    trySpawnAnimal() {
+        if (this.activeAnimals.length < this.maxActive) {
+            this.spawnRandomAnimal();
+        }
+        this.scheduleNextSpawn();
+    }
+
+    spawnRandomAnimal() {
+        // Pick a random animal type
+        const type = this.animalTypes[Math.floor(Math.random() * this.animalTypes.length)];
+
+        // Create element
+        const animal = document.createElement('div');
+        animal.className = `animal ${type.className}`;
+        animal.textContent = type.emoji;
+        this.container.appendChild(animal);
+
+        // Force reflow then add active class
+        animal.offsetHeight;
+        animal.classList.add('active');
+
+        // Track active animal
+        this.activeAnimals.push(animal);
+
+        // Remove after animation completes
+        setTimeout(() => {
+            animal.classList.remove('active');
+            animal.remove();
+            this.activeAnimals = this.activeAnimals.filter(a => a !== animal);
+        }, type.duration);
+    }
+}
+
 class CatYarnGame {
     constructor() {
         // DOM Elements
@@ -85,13 +190,44 @@ class CatYarnGame {
         this.demoMode = false;
         this.demoState = null;
         this.demoTimeout = null;
-        this.demoPanel = document.getElementById('demoPanel');
+        this.settingsPanel = document.getElementById('settingsPanel');
         this.demoBtns = document.querySelectorAll('.demo-btn');
+        this.demoToggle = document.getElementById('demoToggle');
+        this.demoContent = document.getElementById('demoContent');
+        this.demoPanelCollapsed = false;
+
+        // Settings panel
+        this.settingsToggle = document.getElementById('settingsToggle');
+        this.settingsContent = document.getElementById('settingsContent');
+        this.settingsPanelCollapsed = false;
+
+        // Sound settings
+        this.soundEnabled = true;
+        this.soundBtn = document.getElementById('soundBtn');
 
         // Create finger cursor element
         this.fingerCursor = document.createElement('div');
         this.fingerCursor.className = 'finger-cursor';
         this.gameArea.appendChild(this.fingerCursor);
+
+        // Initialize object pools for particles and paw prints
+        this.particlePool = new ObjectPool(() => {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            this.particles.appendChild(p);
+            return p;
+        }, 30);
+
+        this.pawPrintPool = new ObjectPool(() => {
+            const p = document.createElement('div');
+            p.className = 'paw-print';
+            this.pawPrints.appendChild(p);
+            return p;
+        }, 20);
+
+        // Initialize animal spawner (max 2 animals on screen)
+        const decorations = document.getElementById('decorations');
+        this.animalSpawner = new AnimalSpawner(decorations);
 
         // Initialize
         this.init();
@@ -119,9 +255,27 @@ class CatYarnGame {
             });
         });
 
+        // Demo panel collapse toggle
+        this.demoToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleDemoPanel();
+        });
+
+        // Sound toggle button
+        this.soundBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleSound();
+        });
+
+        // Settings panel collapse toggle
+        this.settingsToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggleSettingsPanel();
+        });
+
         // Click anywhere to exit demo mode
         document.addEventListener('click', (e) => {
-            if (this.demoMode && !e.target.closest('.demo-panel')) {
+            if (this.demoMode && !e.target.closest('.settings-panel')) {
                 this.exitDemoMode();
             }
         });
@@ -156,33 +310,46 @@ class CatYarnGame {
     async startCamera() {
         this.updateCameraStatus('🔄 正在启动摄像头...', 'loading');
 
+        // Timeout promise for MediaPipe initialization
+        const timeout = (ms) => new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('TIMEOUT')), ms)
+        );
+
         try {
-            // Initialize MediaPipe Hands
-            this.hands = new Hands({
-                locateFile: (file) => {
-                    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-                }
-            });
+            // Initialize MediaPipe Hands with timeout
+            const initMediaPipe = async () => {
+                this.hands = new Hands({
+                    locateFile: (file) => {
+                        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+                    }
+                });
 
-            this.hands.setOptions({
-                maxNumHands: 1,
-                modelComplexity: 1,
-                minDetectionConfidence: 0.7,
-                minTrackingConfidence: 0.5
-            });
+                this.hands.setOptions({
+                    maxNumHands: 1,
+                    modelComplexity: 1,
+                    minDetectionConfidence: 0.7,
+                    minTrackingConfidence: 0.5
+                });
 
-            this.hands.onResults((results) => this.onHandResults(results));
+                this.hands.onResults((results) => this.onHandResults(results));
 
-            // Setup camera
-            this.camera = new Camera(this.cameraVideo, {
-                onFrame: async () => {
-                    await this.hands.send({ image: this.cameraVideo });
-                },
-                width: 640,
-                height: 480
-            });
+                // Setup camera
+                this.camera = new Camera(this.cameraVideo, {
+                    onFrame: async () => {
+                        await this.hands.send({ image: this.cameraVideo });
+                    },
+                    width: 640,
+                    height: 480
+                });
 
-            await this.camera.start();
+                await this.camera.start();
+            };
+
+            // Race between initialization and 10 second timeout
+            await Promise.race([
+                initMediaPipe(),
+                timeout(10000)
+            ]);
 
             this.updateCameraStatus('✅ 摄像头已启动', 'success');
             setTimeout(() => {
@@ -191,7 +358,26 @@ class CatYarnGame {
 
         } catch (error) {
             console.error('Camera error:', error);
-            this.updateCameraStatus('❌ 无法访问摄像头', 'error');
+
+            // Provide specific error messages
+            let errorMessage = '❌ 无法访问摄像头';
+            if (error.message === 'TIMEOUT') {
+                errorMessage = '⏱️ 加载超时，请检查网络';
+            } else if (error.name === 'NotAllowedError') {
+                errorMessage = '🚫 摄像头权限被拒绝';
+            } else if (error.name === 'NotFoundError') {
+                errorMessage = '📷 未找到摄像头设备';
+            } else if (error.name === 'NotReadableError') {
+                errorMessage = '⚠️ 摄像头正在被其他应用使用';
+            }
+
+            this.updateCameraStatus(errorMessage, 'error');
+
+            // Auto-switch back to mouse mode after 3 seconds
+            setTimeout(() => {
+                this.setControlMode('mouse');
+                this.updateCameraStatus('已切换回鼠标模式', '');
+            }, 3000);
         }
     }
 
@@ -758,8 +944,33 @@ class CatYarnGame {
         this.setCatState('idle');
 
         // Reset hint
-        const demoHint = this.demoPanel.querySelector('.demo-hint');
+        const demoHint = this.settingsPanel.querySelector('.demo-hint');
         demoHint.textContent = '点击按钮预览猫咪动作';
+    }
+
+    toggleDemoPanel() {
+        this.demoPanelCollapsed = !this.demoPanelCollapsed;
+        this.demoContent.classList.toggle('collapsed', this.demoPanelCollapsed);
+        this.demoToggle.classList.toggle('collapsed', this.demoPanelCollapsed);
+
+        // Update toggle icon
+        const toggleIcon = this.demoToggle.querySelector('.toggle-icon');
+        toggleIcon.textContent = this.demoPanelCollapsed ? '▶' : '▼';
+    }
+
+    toggleSettingsPanel() {
+        this.settingsPanelCollapsed = !this.settingsPanelCollapsed;
+        this.settingsContent.classList.toggle('collapsed', this.settingsPanelCollapsed);
+        this.settingsToggle.classList.toggle('collapsed', this.settingsPanelCollapsed);
+
+        // Update toggle icon
+        const toggleIcon = this.settingsToggle.querySelector('.settings-toggle-icon');
+        toggleIcon.textContent = this.settingsPanelCollapsed ? '▶' : '▼';
+    }
+
+    toggleSound() {
+        this.soundEnabled = !this.soundEnabled;
+        this.soundBtn.classList.toggle('active', this.soundEnabled);
     }
 
     render() {
@@ -841,32 +1052,36 @@ class CatYarnGame {
     }
 
     spawnParticle(x, y) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
+        const particle = this.particlePool.acquire();
         particle.style.left = `${x + (Math.random() - 0.5) * 20}px`;
         particle.style.top = `${y + (Math.random() - 0.5) * 20}px`;
 
         const colors = ['#ff6b9d', '#ff9f43', '#ffd8a8', '#ffb3cc'];
         particle.style.background = colors[Math.floor(Math.random() * colors.length)];
 
-        this.particles.appendChild(particle);
+        // Reset animation by re-adding class
+        particle.style.animation = 'none';
+        particle.offsetHeight; // Trigger reflow
+        particle.style.animation = '';
 
         setTimeout(() => {
-            particle.remove();
+            this.particlePool.release(particle);
         }, 800);
     }
 
     addPawPrint() {
-        const pawPrint = document.createElement('div');
-        pawPrint.className = 'paw-print';
+        const pawPrint = this.pawPrintPool.acquire();
         pawPrint.style.left = `${this.catPos.x + (Math.random() - 0.5) * 30}px`;
         pawPrint.style.top = `${this.catPos.y + 20 + (Math.random() - 0.5) * 10}px`;
         pawPrint.style.transform = `rotate(${Math.random() * 60 - 30}deg)`;
 
-        this.pawPrints.appendChild(pawPrint);
+        // Reset animation
+        pawPrint.style.animation = 'none';
+        pawPrint.offsetHeight; // Trigger reflow
+        pawPrint.style.animation = '';
 
         setTimeout(() => {
-            pawPrint.remove();
+            this.pawPrintPool.release(pawPrint);
         }, 2000);
     }
 
@@ -891,6 +1106,9 @@ class CatYarnGame {
     }
 
     playMeowSound() {
+        // Skip if sound is disabled
+        if (!this.soundEnabled) return;
+
         // Create a simple meow sound using Web Audio API
         try {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();

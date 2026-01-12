@@ -12,6 +12,7 @@
 - ✋ **手势控制** - 支持摄像头手势识别（MediaPipe Hands）
 - 🎭 **状态演示** - 可以点击按钮预览所有猫咪动作
 - 🎵 **音效反馈** - 扑中毛线球时有"喵～"叫声和飘字效果
+- 🐢 **背景动物** - 随机出现的可爱动物（乌龟、马、狗、鸟类）
 - 📱 **响应式设计** - 支持桌面和移动设备
 
 ## 🎮 游戏玩法
@@ -48,7 +49,7 @@
 | 类别 | 技术 |
 |------|------|
 | 结构 | HTML5 |
-| 样式 | CSS3 (原生) |
+| 样式 | CSS3 (模块化) |
 | 逻辑 | JavaScript (ES6+) |
 | 字体 | Google Fonts (Fredoka, Press Start 2P) |
 | 手势 | MediaPipe Hands |
@@ -58,11 +59,37 @@
 
 ```
 cat-yarn-game/
-├── index.html      # 主页面
-├── style.css       # 样式文件（包含所有动画）
-├── game.js         # 游戏逻辑
-└── README.md       # 项目说明
+├── index.html          # 主页面
+├── game.js             # 游戏逻辑
+├── styles/             # 模块化 CSS
+│   ├── base.css        # 变量、重置、布局
+│   ├── cat.css         # 猫咪结构和动画
+│   ├── ui.css          # 面板、按钮、相机UI
+│   └── animals.css     # 装饰和背景动物
+└── README.md           # 项目说明
 ```
+
+## 🏗️ 架构亮点
+
+### 对象池模式
+粒子和爪印使用对象池复用 DOM 元素，防止内存泄漏：
+```javascript
+this.particlePool = new ObjectPool(() => {...}, 30);
+this.pawPrintPool = new ObjectPool(() => {...}, 20);
+```
+
+### 动物生成器
+背景动物通过 `AnimalSpawner` 类控制，最多同时显示 2 只：
+```javascript
+this.animalSpawner = new AnimalSpawner(container);
+// 随机 2-8 秒生成一只动物
+```
+
+### 错误边界
+摄像头模式包含完善的错误处理：
+- ⏱️ 10 秒加载超时
+- 🚫 权限拒绝提示
+- ↩️ 自动回退鼠标模式
 
 ## 🚀 本地运行
 
@@ -123,15 +150,18 @@ return Math.min(baseSpeed, 22);  // 最大速度
 
 // 休息时间
 this.restDuration = 3000;        // 休息时长 (ms)
+
+// 背景动物
+this.maxActive = 2;              // 同时显示的动物数量
 ```
 
 ### 修改猫咪外观
-在 `style.css` 中搜索 `:root` 修改颜色变量：
+在 `styles/base.css` 中修改颜色变量：
 
 ```css
 --cat-orange: #ff9f43;     /* 猫咪身体颜色 */
 --yarn-pink: #ff6b9d;      /* 毛线球颜色 */
---pixel-black: #2d3436;    /* 描边颜色 */
+--pixel-black: #535353;    /* 描边颜色 */
 ```
 
 ## 📝 浏览器兼容性

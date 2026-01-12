@@ -1,0 +1,638 @@
+/* ===== Pixel Cat Base Structure ===== */
+.cat {
+    position: absolute;
+    width: 120px;
+    height: 90px;
+    left: 50%;
+    top: 60%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease-out;
+    z-index: 20;
+}
+
+.cat-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cat-head {
+    position: absolute;
+    width: 40px;
+    height: 36px;
+    background: var(--cat-orange);
+    border: 4px solid var(--pixel-black);
+    top: 0;
+    left: 20px;
+    image-rendering: pixelated;
+}
+
+.cat-ear {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 14px solid var(--cat-orange);
+    top: -14px;
+}
+
+.cat-ear::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 8px solid var(--yarn-pink);
+    top: 6px;
+    left: -4px;
+}
+
+.cat-ear-left {
+    left: 2px;
+}
+
+.cat-ear-right {
+    right: 2px;
+}
+
+.cat-face {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cat-eye {
+    position: absolute;
+    width: 10px;
+    height: 12px;
+    background: white;
+    border: 2px solid var(--pixel-black);
+    top: 8px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.cat-eye-left {
+    left: 4px;
+}
+
+.cat-eye-right {
+    right: 4px;
+}
+
+.cat-pupil {
+    position: absolute;
+    width: 6px;
+    height: 8px;
+    background: var(--pixel-black);
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: all 0.1s ease;
+}
+
+.cat-nose {
+    position: absolute;
+    width: 6px;
+    height: 4px;
+    background: var(--yarn-pink);
+    border: 2px solid var(--pixel-black);
+    left: 50%;
+    transform: translateX(-50%);
+    top: 18px;
+}
+
+.cat-nose::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 4px solid var(--yarn-pink);
+    top: 2px;
+    left: -3px;
+}
+
+.cat-mouth {
+    position: absolute;
+    width: 12px;
+    height: 6px;
+    border-bottom: 2px solid var(--pixel-black);
+    border-radius: 0 0 50% 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 22px;
+}
+
+.cat-whiskers {
+    position: absolute;
+    top: 18px;
+}
+
+.cat-whiskers::before,
+.cat-whiskers::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 2px;
+    background: var(--pixel-black);
+}
+
+.cat-whiskers::before {
+    transform: rotate(-10deg);
+    top: -4px;
+}
+
+.cat-whiskers::after {
+    transform: rotate(10deg);
+    top: 4px;
+}
+
+.cat-whiskers-left {
+    left: -18px;
+}
+
+.cat-whiskers-right {
+    right: -18px;
+    transform: scaleX(-1);
+}
+
+.cat-torso {
+    position: absolute;
+    width: 50px;
+    height: 30px;
+    background: var(--cat-orange);
+    border: 4px solid var(--pixel-black);
+    top: 28px;
+    left: 15px;
+    border-radius: 8px;
+}
+
+.cat-leg {
+    position: absolute;
+    width: 12px;
+    height: 20px;
+    background: var(--cat-orange);
+    border: 3px solid var(--pixel-black);
+    bottom: 0;
+    border-radius: 0 0 4px 4px;
+}
+
+.cat-leg-front-left {
+    left: 18px;
+    animation: legWalk 0.3s ease-in-out infinite alternate;
+}
+
+.cat-leg-front-right {
+    left: 32px;
+    animation: legWalk 0.3s ease-in-out infinite alternate-reverse;
+}
+
+.cat-leg-back-left {
+    right: 18px;
+    animation: legWalk 0.3s ease-in-out infinite alternate-reverse;
+}
+
+.cat-leg-back-right {
+    right: 4px;
+    animation: legWalk 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes legWalk {
+    from {
+        height: 20px;
+    }
+
+    to {
+        height: 16px;
+    }
+}
+
+.cat.idle .cat-leg {
+    animation: none;
+    height: 20px;
+}
+
+.cat-tail {
+    position: absolute;
+    width: 8px;
+    height: 30px;
+    background: var(--cat-orange);
+    border: 3px solid var(--pixel-black);
+    right: -5px;
+    top: 20px;
+    border-radius: 4px;
+    transform-origin: top center;
+    animation: tailWag 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes tailWag {
+    from {
+        transform: rotate(-20deg);
+    }
+
+    to {
+        transform: rotate(20deg);
+    }
+}
+
+.cat.excited .cat-tail {
+    animation-duration: 0.2s;
+}
+
+.cat.idle .cat-tail {
+    animation-duration: 1s;
+}
+
+/* ===== Cat States ===== */
+.cat.running .cat-body {
+    animation: catBounce 0.15s ease-in-out infinite alternate;
+}
+
+@keyframes catBounce {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-4px);
+    }
+}
+
+.cat.excited .cat-eye .cat-pupil {
+    transform: scale(1.3);
+}
+
+.cat.idle .cat-body {
+    animation: catBreath 2s ease-in-out infinite;
+}
+
+@keyframes catBreath {
+
+    0%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    50% {
+        transform: scaleY(1.02);
+    }
+}
+
+/* ===== Pounce State ===== */
+.cat.pouncing {
+    animation: catPounce 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.cat.pouncing .cat-body {
+    animation: pounceSquish 0.6s ease-out;
+}
+
+.cat.pouncing .cat-eye .cat-pupil {
+    transform: scale(1.5);
+}
+
+.cat.pouncing .cat-tail {
+    animation: tailExcited 0.08s ease-in-out infinite alternate;
+}
+
+.cat.pouncing .cat-leg {
+    animation: legPounce 0.3s ease-out;
+}
+
+@keyframes catPounce {
+    0% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+
+    15% {
+        transform: translate(-50%, -50%) scale(1.2, 0.7) rotate(0deg);
+    }
+
+    30% {
+        transform: translate(-50%, -50%) scale(0.85, 1.25) rotate(-8deg);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(0.9, 1.15) rotate(-5deg);
+    }
+
+    70% {
+        transform: translate(-50%, -50%) scale(0.95, 1.1) rotate(3deg);
+    }
+
+    85% {
+        transform: translate(-50%, -50%) scale(1.2, 0.75) rotate(5deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+}
+
+@keyframes pounceSquish {
+    0% {
+        transform: scale(1, 1);
+    }
+
+    15% {
+        transform: scale(1.25, 0.7);
+    }
+
+    30% {
+        transform: scale(0.8, 1.3);
+    }
+
+    50% {
+        transform: scale(0.9, 1.15);
+    }
+
+    70% {
+        transform: scale(0.95, 1.1);
+    }
+
+    85% {
+        transform: scale(1.2, 0.75);
+    }
+
+    100% {
+        transform: scale(1, 1);
+    }
+}
+
+@keyframes tailExcited {
+    from {
+        transform: rotate(-50deg);
+    }
+
+    to {
+        transform: rotate(50deg);
+    }
+}
+
+@keyframes legPounce {
+    0% {
+        height: 20px;
+    }
+
+    15% {
+        height: 10px;
+    }
+
+    40% {
+        height: 25px;
+    }
+
+    60% {
+        height: 8px;
+    }
+
+    85% {
+        height: 15px;
+    }
+
+    100% {
+        height: 20px;
+    }
+}
+
+/* Pounce preparing (crouch) */
+.cat.preparing-pounce {
+    animation: preparePounce 0.2s ease-out forwards;
+}
+
+.cat.preparing-pounce .cat-body {
+    animation: crouchBody 0.2s ease-out forwards;
+}
+
+.cat.preparing-pounce .cat-tail {
+    animation: tailReady 0.2s ease-out forwards;
+}
+
+@keyframes preparePounce {
+    from {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    to {
+        transform: translate(-50%, -45%) scale(1.1, 0.85);
+    }
+}
+
+@keyframes crouchBody {
+    from {
+        transform: scaleY(1);
+    }
+
+    to {
+        transform: scaleY(0.85);
+    }
+}
+
+@keyframes tailReady {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(-30deg);
+    }
+}
+
+/* ===== Resting State (Tired Cat) ===== */
+.cat.resting {
+    animation: layDown 0.5s ease-out forwards;
+}
+
+.cat.resting .cat-body {
+    animation: restingBody 0.5s ease-out forwards;
+}
+
+.cat.resting .cat-head {
+    animation: headRest 0.5s ease-out forwards;
+}
+
+.cat.resting .cat-leg {
+    animation: none;
+    height: 10px !important;
+    opacity: 0.8;
+}
+
+.cat.resting .cat-torso {
+    animation: pantingTorso 0.8s ease-in-out infinite;
+}
+
+.cat.resting .cat-tail {
+    animation: tailRest 2s ease-in-out infinite;
+}
+
+.cat.resting .cat-eye {
+    animation: sleepyEyes 3s ease-in-out infinite;
+}
+
+.cat.resting .cat-mouth {
+    animation: panting 0.5s ease-in-out infinite;
+}
+
+@keyframes layDown {
+    from {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    to {
+        transform: translate(-50%, -35%) scale(1.1, 0.7);
+    }
+}
+
+@keyframes restingBody {
+    from {
+        transform: scaleY(1);
+    }
+
+    to {
+        transform: scaleY(0.75) scaleX(1.15);
+    }
+}
+
+@keyframes headRest {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(8px);
+    }
+}
+
+@keyframes pantingTorso {
+
+    0%,
+    100% {
+        transform: scaleX(1);
+    }
+
+    50% {
+        transform: scaleX(1.08);
+    }
+}
+
+@keyframes tailRest {
+
+    0%,
+    100% {
+        transform: rotate(-5deg);
+    }
+
+    50% {
+        transform: rotate(5deg);
+    }
+}
+
+@keyframes sleepyEyes {
+
+    0%,
+    40%,
+    100% {
+        height: 12px;
+        opacity: 1;
+    }
+
+    45%,
+    55% {
+        height: 4px;
+        opacity: 0.8;
+    }
+}
+
+@keyframes panting {
+
+    0%,
+    100% {
+        border-bottom-width: 2px;
+        height: 6px;
+    }
+
+    50% {
+        border-bottom-width: 3px;
+        height: 10px;
+    }
+}
+
+/* Tongue indicator */
+.cat.resting .cat-mouth::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 8px;
+    background: #ff8a9b;
+    border: 2px solid var(--pixel-black);
+    border-radius: 0 0 50% 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 4px;
+    animation: tongue 0.5s ease-in-out infinite;
+}
+
+@keyframes tongue {
+
+    0%,
+    100% {
+        height: 8px;
+    }
+
+    50% {
+        height: 12px;
+    }
+}
+
+/* Tired eyes */
+.cat.resting .cat-eye::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: var(--cat-orange);
+    border-bottom: 2px solid var(--pixel-black);
+    animation: droopyEyelid 0.8s ease-in-out infinite;
+}
+
+@keyframes droopyEyelid {
+
+    0%,
+    100% {
+        height: 40%;
+    }
+
+    50% {
+        height: 50%;
+    }
+}
+
+/* Z's for sleeping */
+.cat.resting::after {
+    content: '💤';
+    position: absolute;
+    top: -20px;
+    right: -10px;
+    font-size: 20px;
+    animation: floatZ 1.5s ease-in-out infinite;
+}
+
+@keyframes floatZ {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.1);
+        opacity: 1;
+    }
+}

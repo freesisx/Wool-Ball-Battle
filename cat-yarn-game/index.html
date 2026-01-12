@@ -10,7 +10,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka:wght@400;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <!-- Modular CSS -->
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/cat.css">
+    <link rel="stylesheet" href="styles/ui.css">
+    <link rel="stylesheet" href="styles/animals.css">
     <!-- MediaPipe Hands -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"
@@ -36,50 +40,79 @@
             </div>
         </div>
 
-        <!-- Control Panel -->
-        <div class="control-panel" id="controlPanel">
-            <div class="control-title">🎮 控制模式</div>
-            <div class="control-buttons">
-                <button class="control-btn active" id="mouseBtn" data-mode="mouse">
-                    🖱️ 鼠标
-                </button>
-                <button class="control-btn" id="cameraBtn" data-mode="camera">
-                    ✋ 手势
+        <!-- Unified Settings Panel -->
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-header">
+                <div class="settings-title">⚙️ 设置</div>
+                <button class="settings-toggle" id="settingsToggle" title="展开/折叠设置">
+                    <span class="settings-toggle-icon">▼</span>
                 </button>
             </div>
-            <div class="control-hint" id="controlHint">移动鼠标控制毛线球</div>
-        </div>
 
-        <!-- State Demo Panel -->
-        <div class="demo-panel" id="demoPanel">
-            <div class="demo-title">🎭 状态演示</div>
-            <div class="demo-grid">
-                <button class="demo-btn" data-state="idle">
-                    <span class="demo-emoji">😺</span>
-                    <span class="demo-label">悠闲</span>
-                </button>
-                <button class="demo-btn" data-state="curious">
-                    <span class="demo-emoji">😸</span>
-                    <span class="demo-label">好奇</span>
-                </button>
-                <button class="demo-btn" data-state="running">
-                    <span class="demo-emoji">😻</span>
-                    <span class="demo-label">追逐</span>
-                </button>
-                <button class="demo-btn" data-state="excited">
-                    <span class="demo-emoji">🙀</span>
-                    <span class="demo-label">兴奋</span>
-                </button>
-                <button class="demo-btn" data-state="pouncing">
-                    <span class="demo-emoji">🐱</span>
-                    <span class="demo-label">飞扑</span>
-                </button>
-                <button class="demo-btn" data-state="resting">
-                    <span class="demo-emoji">😴</span>
-                    <span class="demo-label">休息</span>
-                </button>
+            <div class="settings-content" id="settingsContent">
+                <!-- Control Mode Section -->
+                <div class="settings-section">
+                    <div class="section-title">🎮 控制模式</div>
+                    <div class="control-buttons">
+                        <button class="control-btn active" id="mouseBtn" data-mode="mouse">
+                            🖱️ 鼠标
+                        </button>
+                        <button class="control-btn" id="cameraBtn" data-mode="camera">
+                            ✋ 手势
+                        </button>
+                    </div>
+                    <div class="section-hint" id="controlHint">移动鼠标控制毛线球</div>
+                </div>
+
+                <!-- Sound Section -->
+                <div class="settings-section">
+                    <div class="section-title">🔊 音效</div>
+                    <button class="toggle-switch active" id="soundBtn" title="声音开关">
+                        <span class="toggle-icon-left">🔊</span>
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-icon-right">🔇</span>
+                    </button>
+                </div>
+
+                <!-- State Demo Section -->
+                <div class="settings-section">
+                    <div class="section-header">
+                        <div class="section-title">🎭 状态演示</div>
+                        <button class="section-toggle" id="demoToggle" title="展开/折叠">
+                            <span class="toggle-icon">▼</span>
+                        </button>
+                    </div>
+                    <div class="demo-content" id="demoContent">
+                        <div class="demo-grid">
+                            <button class="demo-btn" data-state="idle">
+                                <span class="demo-emoji">😺</span>
+                                <span class="demo-label">悠闲</span>
+                            </button>
+                            <button class="demo-btn" data-state="curious">
+                                <span class="demo-emoji">😸</span>
+                                <span class="demo-label">好奇</span>
+                            </button>
+                            <button class="demo-btn" data-state="running">
+                                <span class="demo-emoji">😻</span>
+                                <span class="demo-label">追逐</span>
+                            </button>
+                            <button class="demo-btn" data-state="excited">
+                                <span class="demo-emoji">🙀</span>
+                                <span class="demo-label">兴奋</span>
+                            </button>
+                            <button class="demo-btn" data-state="pouncing">
+                                <span class="demo-emoji">🐱</span>
+                                <span class="demo-label">飞扑</span>
+                            </button>
+                            <button class="demo-btn" data-state="resting">
+                                <span class="demo-emoji">😴</span>
+                                <span class="demo-label">休息</span>
+                            </button>
+                        </div>
+                        <div class="demo-hint">点击按钮预览猫咪动作</div>
+                    </div>
+                </div>
             </div>
-            <div class="demo-hint">点击按钮预览猫咪动作</div>
         </div>
 
         <header class="game-header">
@@ -134,24 +167,30 @@
             <div class="paw-prints" id="pawPrints"></div>
         </div>
 
-        <div class="game-info">
-            <div class="score-panel">
-                <span class="label">扑中</span>
-                <span class="value" id="pounceCount">0</span>
-                <span class="unit">次</span>
+        <div class="game-stats" id="gameStats">
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-label">🎯 扑中</span>
+                    <span class="stat-value" id="pounceCount">0</span>
+                    <span class="stat-unit">次</span>
+                </div>
             </div>
-            <div class="score-panel">
-                <span class="label">猫咪状态</span>
-                <span class="value cat-mood" id="catMood">😺 好奇</span>
+            <div class="stats-divider"></div>
+            <div class="stats-row">
+                <div class="stat-item mood-item">
+                    <span class="stat-label">🐱 状态</span>
+                    <span class="stat-value cat-mood" id="catMood">😺 好奇</span>
+                </div>
             </div>
         </div>
 
-        <div class="decorations">
+        <div class="decorations" id="decorations">
             <div class="cloud cloud-1"></div>
             <div class="cloud cloud-2"></div>
             <div class="cloud cloud-3"></div>
             <div class="cactus cactus-1"></div>
             <div class="cactus cactus-2"></div>
+            <!-- Animals will be spawned dynamically by JavaScript -->
         </div>
 
         <footer class="game-footer">

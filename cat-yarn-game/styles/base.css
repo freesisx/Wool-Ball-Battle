@@ -1,0 +1,216 @@
+/* ===== CSS Variables & Reset ===== */
+:root {
+    --bg-sky: #f7f7f7;
+    --bg-ground: #535353;
+    --ground-line: #747474;
+    --pixel-black: #535353;
+    --pixel-gray: #747474;
+    --pixel-light: #c4c4c4;
+    --cat-orange: #ff9f43;
+    --cat-dark: #ee7730;
+    --cat-light: #ffd8a8;
+    --yarn-pink: #ff6b9d;
+    --yarn-dark: #e84a7f;
+    --yarn-light: #ffb3cc;
+    --accent-green: #2ecc71;
+    --text-dark: #535353;
+
+    --font-pixel: 'Press Start 2P', cursive;
+    --font-cartoon: 'Fredoka', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-pixel);
+    background: var(--bg-sky);
+    min-height: 100vh;
+    overflow: hidden;
+    cursor: none;
+    image-rendering: pixelated;
+}
+
+/* ===== Game Container ===== */
+.game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ===== Sky & Ground (Chrome Dino Style) ===== */
+.sky {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70%;
+    background: var(--bg-sky);
+}
+
+.ground {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    background: var(--bg-sky);
+    border-top: 4px solid var(--pixel-black);
+}
+
+.ground::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: repeating-linear-gradient(90deg,
+            var(--pixel-gray) 0px,
+            var(--pixel-gray) 20px,
+            transparent 20px,
+            transparent 40px);
+    animation: groundScroll 3s linear infinite;
+}
+
+.ground::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: repeating-linear-gradient(90deg,
+            transparent 0px,
+            transparent 30px,
+            var(--pixel-light) 30px,
+            var(--pixel-light) 40px);
+    animation: groundScroll 5s linear infinite;
+}
+
+@keyframes groundScroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-100px);
+    }
+}
+
+/* ===== Header ===== */
+.game-header {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 100;
+}
+
+.game-header h1 {
+    font-size: 24px;
+    color: var(--text-dark);
+    text-shadow:
+        4px 4px 0 var(--bg-sky),
+        -1px -1px 0 var(--pixel-light);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.game-title {
+    font-family: var(--font-cartoon);
+    font-size: 52px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--yarn-pink) 0%, var(--cat-orange) 50%, var(--yarn-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    filter: drop-shadow(3px 3px 0 var(--pixel-black)) drop-shadow(-1px -1px 0 white);
+    letter-spacing: 4px;
+    animation: titleBounce 2s ease-in-out infinite;
+}
+
+@keyframes titleBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.subtitle {
+    font-family: var(--font-cartoon);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--pixel-gray);
+    letter-spacing: 1px;
+}
+
+/* ===== Game Area ===== */
+.game-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
+/* ===== Footer ===== */
+.game-footer {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 100;
+}
+
+.game-footer p {
+    font-size: 10px;
+    color: var(--pixel-gray);
+    letter-spacing: 1px;
+}
+
+/* ===== Custom Cursor ===== */
+.game-area::after {
+    content: '';
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: var(--yarn-pink);
+    border: 2px solid var(--pixel-black);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .game-header h1 {
+        font-size: 16px;
+    }
+
+    .game-title {
+        font-size: 32px;
+    }
+
+    .subtitle {
+        font-size: 12px;
+    }
+
+    .game-footer p {
+        font-size: 8px;
+    }
+}

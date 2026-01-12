@@ -1,0 +1,346 @@
+/* ===== Decorations (Chrome Dino Style) ===== */
+.decorations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Clouds */
+.cloud {
+    position: absolute;
+    background: var(--pixel-light);
+    border: 3px solid var(--pixel-gray);
+}
+
+.cloud::before,
+.cloud::after {
+    content: '';
+    position: absolute;
+    background: var(--pixel-light);
+    border: 3px solid var(--pixel-gray);
+}
+
+.cloud-1 {
+    width: 60px;
+    height: 20px;
+    top: 15%;
+    left: 10%;
+    animation: cloudFloat 20s linear infinite;
+}
+
+.cloud-1::before {
+    width: 30px;
+    height: 16px;
+    top: -12px;
+    left: 10px;
+}
+
+.cloud-2 {
+    width: 80px;
+    height: 24px;
+    top: 25%;
+    left: 60%;
+    animation: cloudFloat 25s linear infinite;
+}
+
+.cloud-2::before {
+    width: 40px;
+    height: 20px;
+    top: -14px;
+    left: 20px;
+}
+
+.cloud-3 {
+    width: 50px;
+    height: 18px;
+    top: 10%;
+    left: 80%;
+    animation: cloudFloat 18s linear infinite;
+}
+
+.cloud-3::before {
+    width: 25px;
+    height: 14px;
+    top: -10px;
+    left: 12px;
+}
+
+@keyframes cloudFloat {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-100vw);
+    }
+}
+
+/* Cactus */
+.cactus {
+    position: absolute;
+    bottom: 32%;
+    width: 20px;
+    height: 50px;
+    background: var(--pixel-gray);
+    border: 3px solid var(--pixel-black);
+}
+
+.cactus::before,
+.cactus::after {
+    content: '';
+    position: absolute;
+    background: var(--pixel-gray);
+    border: 3px solid var(--pixel-black);
+}
+
+.cactus::before {
+    width: 12px;
+    height: 25px;
+    left: -15px;
+    top: 10px;
+    border-radius: 6px 6px 0 0;
+}
+
+.cactus::after {
+    width: 12px;
+    height: 20px;
+    right: -15px;
+    top: 15px;
+    border-radius: 6px 6px 0 0;
+}
+
+.cactus-1 {
+    left: 10%;
+    animation: cactusMove 15s linear infinite;
+}
+
+.cactus-2 {
+    left: 70%;
+    height: 40px;
+    animation: cactusMove 20s linear infinite;
+}
+
+@keyframes cactusMove {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-100vw);
+    }
+}
+
+/* ===== Animated Animals ===== */
+.animal {
+    position: absolute;
+    pointer-events: none;
+    z-index: 3;
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.2));
+    display: none;
+    /* Hidden by default, shown when spawned */
+}
+
+.animal.active {
+    display: block;
+}
+
+/* Turtle - Very slow crawl */
+.turtle {
+    font-size: 28px;
+    bottom: 32%;
+    left: -50px;
+}
+
+.turtle.active {
+    animation: turtleCrawl 45s linear forwards;
+}
+
+@keyframes turtleCrawl {
+    0% {
+        transform: translateX(0) scaleX(1);
+    }
+
+    100% {
+        transform: translateX(calc(100vw + 100px)) scaleX(1);
+    }
+}
+
+/* Horse - Fast gallop */
+.horse {
+    font-size: 36px;
+    bottom: 31%;
+    left: -60px;
+}
+
+.horse.active {
+    animation: horseRun 8s linear forwards;
+}
+
+@keyframes horseRun {
+    0% {
+        transform: translateX(0) scaleX(-1);
+    }
+
+    100% {
+        transform: translateX(calc(100vw + 120px)) scaleX(-1);
+    }
+}
+
+/* Dog - Walk and stop intermittently */
+.dog {
+    font-size: 30px;
+    bottom: 32%;
+    left: -50px;
+}
+
+.dog.active {
+    animation: dogWalk 20s ease-in-out forwards;
+}
+
+@keyframes dogWalk {
+    0% {
+        transform: translateX(0) scaleX(-1);
+    }
+
+    15% {
+        transform: translateX(15vw) scaleX(-1);
+    }
+
+    20% {
+        transform: translateX(15vw) scaleX(-1) rotate(-5deg);
+    }
+
+    25% {
+        transform: translateX(15vw) scaleX(-1) rotate(0deg);
+    }
+
+    40% {
+        transform: translateX(40vw) scaleX(-1);
+    }
+
+    45% {
+        transform: translateX(40vw) scaleX(-1) rotate(3deg);
+    }
+
+    48% {
+        transform: translateX(40vw) scaleX(-1) rotate(-3deg);
+    }
+
+    50% {
+        transform: translateX(40vw) scaleX(-1) rotate(0deg);
+    }
+
+    70% {
+        transform: translateX(70vw) scaleX(-1);
+    }
+
+    72% {
+        transform: translateX(70vw) scaleX(-1);
+    }
+
+    100% {
+        transform: translateX(calc(100vw + 100px)) scaleX(-1);
+    }
+}
+
+/* Birds - Flying across the sky */
+.bird {
+    font-size: 20px;
+    left: -40px;
+}
+
+.bird-1 {
+    top: 12%;
+}
+
+.bird-2 {
+    top: 8%;
+    font-size: 24px;
+}
+
+.bird-3 {
+    top: 18%;
+    font-size: 22px;
+}
+
+.bird-1.active {
+    animation: birdFly1 12s linear forwards;
+}
+
+.bird-2.active {
+    animation: birdFly2 15s linear forwards;
+}
+
+.bird-3.active {
+    animation: birdFly3 10s linear forwards;
+}
+
+@keyframes birdFly1 {
+    0% {
+        transform: translateX(0) translateY(0);
+    }
+
+    25% {
+        transform: translateX(25vw) translateY(-15px);
+    }
+
+    50% {
+        transform: translateX(50vw) translateY(10px);
+    }
+
+    75% {
+        transform: translateX(75vw) translateY(-8px);
+    }
+
+    100% {
+        transform: translateX(calc(100vw + 80px)) translateY(0);
+    }
+}
+
+@keyframes birdFly2 {
+    0% {
+        transform: translateX(0) translateY(0) scaleX(-1);
+    }
+
+    20% {
+        transform: translateX(20vw) translateY(20px) scaleX(-1);
+    }
+
+    40% {
+        transform: translateX(40vw) translateY(-10px) scaleX(-1);
+    }
+
+    60% {
+        transform: translateX(60vw) translateY(15px) scaleX(-1);
+    }
+
+    80% {
+        transform: translateX(80vw) translateY(-5px) scaleX(-1);
+    }
+
+    100% {
+        transform: translateX(calc(100vw + 80px)) translateY(0) scaleX(-1);
+    }
+}
+
+@keyframes birdFly3 {
+    0% {
+        transform: translateX(0) translateY(0);
+    }
+
+    33% {
+        transform: translateX(33vw) translateY(-20px);
+    }
+
+    66% {
+        transform: translateX(66vw) translateY(12px);
+    }
+
+    100% {
+        transform: translateX(calc(100vw + 80px)) translateY(-5px);
+    }
+}
