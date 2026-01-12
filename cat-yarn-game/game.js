@@ -186,6 +186,14 @@ class CatYarnGame {
         this.restStartTime = 0;
         this.preparingPounce = false;
 
+        // Feeding system
+        this.foodTypes = ['🥫', '🐟'];
+        this.currentFood = null;
+        this.isEating = false;
+        this.foodSpawnCooldown = false;
+        this.isOpenHand = false;
+        this.eatingDuration = 2000; // ms to eat food
+
         // Demo mode
         this.demoMode = false;
         this.demoState = null;
@@ -415,24 +423,66 @@ class CatYarnGame {
             const landmarks = results.multiHandLandmarks[0];
             this.drawHandLandmarks(canvasCtx, landmarks, canvasWidth, canvasHeight);
 
-            const indexFingerTip = landmarks[8];
-            const screenX = (1 - indexFingerTip.x) * window.innerWidth;
-            const screenY = indexFingerTip.y * window.innerHeight;
+            // Detect open hand (5 fingers spread)
+            const openHand = this.detectOpenHand(landmarks);
 
-            this.fingerPos = { x: screenX, y: screenY };
-            this.smoothedFingerPos.x += (screenX - this.smoothedFingerPos.x) * this.fingerSmoothing;
-            this.smoothedFingerPos.y += (screenY - this.smoothedFingerPos.y) * this.fingerSmoothing;
+            if (openHand) {
+                // Use palm center for food position
+                const palmCenter = landmarks[9]; // Middle finger base
+                const palmX = (1 - palmCenter.x) * window.innerWidth;
+                const palmY = palmCenter.y * window.innerHeight;
 
-            if (this.controlMode === 'camera') {
-                this.updateYarnFromFinger();
+                if (!this.isOpenHand) {
+                    // Just opened hand - spawn food
+                    this.isOpenHand = true;
+                    this.spawnFood(palmX, palmY);
+                }
+            } else {
+                this.isOpenHand = false;
+
+                // Control yarn ball with index finger
+                const indexFingerTip = landmarks[8];
+                const screenX = (1 - indexFingerTip.x) * window.innerWidth;
+                const screenY = indexFingerTip.y * window.innerHeight;
+
+                this.fingerPos = { x: screenX, y: screenY };
+                this.smoothedFingerPos.x += (screenX - this.smoothedFingerPos.x) * this.fingerSmoothing;
+                this.smoothedFingerPos.y += (screenY - this.smoothedFingerPos.y) * this.fingerSmoothing;
+
+                if (this.controlMode === 'camera') {
+                    this.updateYarnFromFinger();
+                }
             }
 
         } else {
             this.handDetected = false;
             this.handIndicator.classList.remove('visible');
+            this.isOpenHand = false;
         }
 
         canvasCtx.restore();
+    }
+
+    // Detect if hand is open (4+ fingers extended)
+    detectOpenHand(landmarks) {
+        // Finger tips and their bases
+        const fingerTips = [8, 12, 16, 20]; // Index, Middle, Ring, Pinky
+        const fingerBases = [6, 10, 14, 18]; // Their corresponding bases
+
+        let extendedCount = 0;
+
+        // Check if fingers are extended (tip is above base in Y)
+        for (let i = 0; i < 4; i++) {
+            if (landmarks[fingerTips[i]].y < landmarks[fingerBases[i]].y) {
+                extendedCount++;
+            }
+        }
+
+        // Check thumb (tip is to the left of base for right hand)
+        const thumbExtended = Math.abs(landmarks[4].x - landmarks[2].x) > 0.05;
+        if (thumbExtended) extendedCount++;
+
+        return extendedCount >= 4;
     }
 
     drawHandLandmarks(ctx, landmarks, width, height) {
@@ -567,6 +617,34 @@ class CatYarnGame {
                 this.setCatState('curious');
             }
             return; // Don't move while resting
+        }
+
+        // Handle eating state - cat moves toward food
+        if (this.isEating && this.currentFood) {
+            const foodDx = this.currentFood.x - this.catPos.x;
+            const foodDy = this.currentFood.y - this.catPos.y;
+            const foodDistance = Math.sqrt(foodDx * foodDx + foodDy * foodDy);
+
+            if (foodDistance > 40) {
+                // Move toward food
+                const speed = 5;
+                const dirX = foodDx / foodDistance;
+                const dirY = foodDy / foodDistance;
+
+                this.catPos.x += dirX * speed;
+                this.catPos.y += dirY * speed;
+
+                this.setCatState('running');
+            } else if (this.catState !== 'eating') {
+                // Arrived at food - start eating
+                this.startEating();
+            }
+
+            // Update cat position and facing
+            this.cat.style.left = `${this.catPos.x}px`;
+            this.cat.style.top = `${this.catPos.y}px`;
+            this.cat.style.transform = `translate(-50%, -50%) scaleX(${foodDx > 0 ? 1 : -1})`;
+            return;
         }
 
         // Handle pouncing animation
@@ -794,7 +872,8 @@ class CatYarnGame {
             'excited': '🙀 超兴奋!',
             'preparing-pounce': '😼 准备飞扑...',
             'pouncing': '🐱 飞扑！',
-            'resting': '😴 累了休息...'
+            'resting': '😴 累了休息...',
+            'eating': '😋 好好吃~'
         };
         this.catMoodDisplay.textContent = moods[state] || '😺 好奇';
 
@@ -815,6 +894,49 @@ class CatYarnGame {
             this.catMoodDisplay.textContent = `😴 休息中... ${remainingTime}s`;
             setTimeout(() => this.updateRestingCountdown(), 200);
         }
+    }
+
+    // Food spawning and eating
+    spawnFood(x, y) {
+        if (this.currentFood || this.foodSpawnCooldown || this.isEating) return;
+
+        const food = document.createElement('div');
+        food.className = 'food';
+        food.textContent = this.foodTypes[Math.floor(Math.random() * this.foodTypes.length)];
+        food.style.left = `${x}px`;
+        food.style.top = `${y}px`;
+        this.gameArea.appendChild(food);
+
+        this.currentFood = { element: food, x, y };
+        this.isEating = true;
+
+        // Set cooldown to prevent rapid spawning
+        this.foodSpawnCooldown = true;
+        setTimeout(() => this.foodSpawnCooldown = false, 3000);
+    }
+
+    startEating() {
+        if (!this.currentFood) return;
+
+        this.setCatState('eating');
+        this.currentFood.element.classList.add('eating');
+
+        // Play eating sound/effect
+        if (this.soundEnabled) {
+            this.showMeowText();
+        }
+
+        // Finish eating after duration
+        setTimeout(() => this.finishEating(), this.eatingDuration);
+    }
+
+    finishEating() {
+        if (this.currentFood) {
+            this.currentFood.element.remove();
+            this.currentFood = null;
+        }
+        this.isEating = false;
+        this.setCatState('idle');
     }
 
     // Demo mode methods

@@ -636,3 +636,33 @@
         opacity: 1;
     }
 }
+
+/* ===== Eating State ===== */
+.cat.eating {
+    animation: none;
+}
+
+.cat.eating .cat-head {
+    animation: headEating 0.5s ease-in-out infinite;
+}
+
+@keyframes headEating {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(5px);
+    }
+}
+
+.cat.eating .cat-leg {
+    height: 12px !important;
+}
+
+.cat.eating .cat-eye {
+    height: 4px;
+    /* Happy eyes while eating */
+}
